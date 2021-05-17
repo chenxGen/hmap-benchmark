@@ -102,18 +102,6 @@ module Xcodeproj
       else
         puts '- available pods not found'
         puts available_pods_path
-        self.available_pods=Dir["#{Dir.home}/.cocoapods/repos/master/**/*.podspec.json"].map do |one|
-          name=Pathname(one).basename.to_s.split('.').first
-          if name =~ /^[A-Z]/
-            name
-          else
-            nil
-          end
-        end.compact.uniq.sort
-        File::open(available_pods_path, 'w') do |file|
-          file << 'AVAILABLE_PODS='
-          file << available_pods
-        end
       end
     end
     def code_generator

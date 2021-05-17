@@ -56,8 +56,8 @@ end
 Dir.chdir(Dir.pwd + '/app')
 build_costs=[]
 build_costs_with_plugin=[]
-test_cases=[[100, 10], [500, 10], [800, 50]]
-# test_cases=[[10, 2]]
+test_cases=[[100, 10], [500, 20], [500, 50], [800, 50]]
+# test_cases=[[1, 300]]
 count=0
 while count < test_cases.size
   one_case=test_cases[count]
@@ -70,7 +70,16 @@ while count < test_cases.size
   [false, true, false, true].each do |flag|
     tool.gen_podfile(flag)
     # pod install
-    system('pod install > /dev/null')
+    suc=system('arch -x86_64 pod install')
+    unless suc
+      puts '[x] pod install failed.'.red
+      if build_costs.size > 0
+        Helper.append_data('Total', build_costs, build_costs_with_plugin)
+        tbl=Print::Table.new(labels, $datas)
+        tbl.print
+      end
+      return
+    end
     if flag
       puts "- prepare to build project using hmap plugin"
       current_costs_with_plugin << Xcodeproj.build
