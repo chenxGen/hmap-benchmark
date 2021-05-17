@@ -94,12 +94,14 @@ module Xcodeproj
       @target=@xcodeproj.objects.grep(Project::Object::PBXNativeTarget)[0]
     end
     def checking_available_pods
-      available_pods_path=Dir.pwd + "/available_pods.rb"
+      available_pods_path=Dir.pwd + "/../available_pods.rb"
       puts '- checking available pods'
       if File.exists?(available_pods_path)
         require available_pods_path
         self.available_pods = AVAILABLE_PODS
       else
+        puts '- available pods not found'
+        puts available_pods_path
         self.available_pods=Dir["#{Dir.home}/.cocoapods/repos/master/**/*.podspec.json"].map do |one|
           name=Pathname(one).basename.to_s.split('.').first
           if name =~ /^[A-Z]/

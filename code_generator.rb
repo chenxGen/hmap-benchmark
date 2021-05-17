@@ -24,6 +24,7 @@ module Xcodeproj
       %{# Made by script
 # Uncomment the next line to define a global platform for your project
 platform :ios, '10.0'
+warn_for_unused_master_specs_repo => false
 #{plugin ? "plugin 'cocoapods-project-hmap'" : ''}
 
 target '#{target_name}' do

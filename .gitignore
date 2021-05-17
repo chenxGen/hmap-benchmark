@@ -60,4 +60,6 @@ fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
 
-benchmark/classes/**
+app/app/classes/**
+app/Podfile
+app/Podfile.lock
