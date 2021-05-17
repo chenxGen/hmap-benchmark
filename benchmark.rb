@@ -36,7 +36,7 @@ module Print
   end
 end
 
-labels={case:'Case', average:'Average(s)', detail:'Detail(s)'}
+$labels={case:'Case', average:'Average(s)', detail:'Detail(s)'}
 $datas = []
 
 module Helper
@@ -47,8 +47,8 @@ module Helper
     $datas << {case:"#{title} (plugin)", average:"#{ave_cost_plugin}", detail:"#{costs_with_plugin}"}
     speed=(1.0/ave_cost_plugin - 1.0/ave_cost_origin)/(1.0/ave_cost_origin)
     time_saved_rate=(ave_cost_origin - ave_cost_plugin)/ave_cost_origin
-    $datas << {case:"> optimization (speed)", average:"#{speed*100.round(2)}%", detail:""}
-    $datas << {case:"> optimization (time cost)", average:"#{time_saved_rate*100.round(2)}%", detail:""}
+    $datas << {case:"> optimization (speed)", average:"#{(speed*100).round(2)}%", detail:""}
+    $datas << {case:"> optimization (time cost)", average:"#{(time_saved_rate*100).round(2)}%", detail:""}
   end
   module_function :append_data
 end
@@ -56,7 +56,8 @@ end
 Dir.chdir(Dir.pwd + '/app')
 build_costs=[]
 build_costs_with_plugin=[]
-test_cases=[[100, 10], [500, 20], [500, 50], [800, 50]]
+# test_cases=[[100, 10], [500, 20], [500, 50], [800, 50]]
+test_cases=[[100, 10], [500, 10], [1000, 10], [1000, 20]]
 # test_cases=[[1, 300]]
 count=0
 while count < test_cases.size
@@ -70,12 +71,12 @@ while count < test_cases.size
   [false, true, false, true].each do |flag|
     tool.gen_podfile(flag)
     # pod install
-    suc=system('arch -x86_64 pod install')
+    suc=system('arch -x86_64 pod install --verbose')
     unless suc
       puts '[x] pod install failed.'.red
       if build_costs.size > 0
         Helper.append_data('Total', build_costs, build_costs_with_plugin)
-        tbl=Print::Table.new(labels, $datas)
+        tbl=Print::Table.new($labels, $datas)
         tbl.print
       end
       return
@@ -91,11 +92,13 @@ while count < test_cases.size
 
   build_costs = build_costs + current_costs
   build_costs_with_plugin = build_costs_with_plugin + current_costs_with_plugin
-  Helper.append_data("#{one_case.first} source files & #{one_case.last} pods(origin)", current_costs, current_costs_with_plugin)
+  Helper.append_data("#{one_case.first} source files & #{one_case.last} pods", current_costs, current_costs_with_plugin)
+  tbl=Print::Table.new($labels, $datas)
+  tbl.print
   count=count+1
 end
 
 Helper.append_data('Total', build_costs, build_costs_with_plugin)
 
-tbl=Print::Table.new(labels, $datas)
+tbl=Print::Table.new($labels, $datas)
 tbl.print
