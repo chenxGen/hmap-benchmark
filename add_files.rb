@@ -44,6 +44,9 @@ module Xcodeproj
         puts '- clean classes group'
         obj_group.files.each do |f|
           source_build_phase.remove_file_reference(f)
+          if File.exist?(f.path)
+              File.delete(f.path)
+          end
         end
         obj_group.clear
       end
@@ -57,7 +60,7 @@ module Xcodeproj
       while count < number_of_files_to_add do
         name="#{TEST_OBJECT_PREFIX}#{count}"
         header_path = File::join(class_dir, "/#{name}.h")
-        imp_path = File::join(class_dir, "/#{name}.mm")
+        imp_path = File::join(class_dir, "/#{name}.m")
         File::open(header_path, 'w') { |file| file << code_generator.header_code(name) }
         File::open(imp_path, 'w') { |file| file << code_generator.implementation_code(name) }
         obj_group.new_reference(header_path)

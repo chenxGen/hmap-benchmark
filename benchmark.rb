@@ -1,40 +1,6 @@
 require './add_files.rb'
-require './build.rb'
-require 'colored2'
-
-module Print
-  class Table
-    attr_accessor :datas
-    attr_accessor :columns
-    def initialize(labels, datas)
-      self.datas = datas
-      @columns = labels.each_with_object({}) { |(col,label),h|
-       h[col] = {
-         label: label,
-         width: [datas.map { |g| g[col].size }.max, label.size].max }
-       }
-    end
-    def print_header
-     puts "| #{ @columns.map { |_,g| g[:label].ljust(g[:width]) }.join(' | ') } |"
-    end
-
-    def print_divider
-     puts "+-#{ @columns.map { |_,g| "-"*g[:width] }.join("-+-") }-+"
-    end
-
-    def print_line(h)
-     str = h.keys.map { |k| h[k].ljust(@columns[k][:width]) }.join(" | ")
-     puts "| #{str} |"
-    end
-    def print
-      print_divider
-      print_header
-      print_divider
-      @datas.each { |h| print_line(h) }
-      print_divider
-    end
-  end
-end
+require './xcbuild_tool.rb'
+require './print_table.rb'
 
 $labels={case:'Case', average:'Average(s)', detail:'Detail(s)'}
 $datas = []
@@ -57,9 +23,14 @@ Dir.chdir(Dir.pwd + '/app')
 build_costs=[]
 build_costs_with_plugin=[]
 # test_cases=[[100, 10], [500, 20], [500, 50], [800, 50]]
-test_cases=[[100, 10], [500, 10], [1000, 10], [1000, 20]]
-# test_cases=[[1, 300]]
+# test_cases=[[100, 10], [500, 10], [1000, 10], [1000, 20]]
+test_cases=[[1, 200]]
 count=0
+
+workspace=Dir.glob('*.xcworkspace').first
+scheme=workspace.split('.').first
+build_tool=Xcodeproj::BuildTool.new(workspace, scheme)
+
 while count < test_cases.size
   one_case=test_cases[count]
   # add file refers with ARGV
@@ -68,12 +39,13 @@ while count < test_cases.size
   puts "- running case #{count+1}/#{test_cases.size}".green
   current_costs=[]
   current_costs_with_plugin=[]
-  [false, true, false, true].each do |flag|
+  pre_flag=true
+  # each build twice
+  [false, false, true, true].each do |flag|
     tool.gen_podfile(flag)
     # pod install
-    suc=system('arch -x86_64 pod install --verbose')
+    suc=build_tool.pod_install
     unless suc
-      puts '[x] pod install failed.'.red
       if build_costs.size > 0
         Helper.append_data('Total', build_costs, build_costs_with_plugin)
         tbl=Print::Table.new($labels, $datas)
@@ -81,13 +53,19 @@ while count < test_cases.size
       end
       return
     end
+
+    if pre_flag != flag
+      build_tool.clean_cache
+    end
+
     if flag
       puts "- prepare to build project using hmap plugin"
-      current_costs_with_plugin << Xcodeproj.build
+      current_costs_with_plugin << build_tool.run
     else
       puts "- prepare to build project without plugin"
-      current_costs << Xcodeproj.build
+      current_costs << build_tool.run
     end
+    pre_flag = flag
   end
 
   build_costs = build_costs + current_costs
