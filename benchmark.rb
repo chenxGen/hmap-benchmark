@@ -22,9 +22,9 @@ end
 Dir.chdir(Dir.pwd + '/app')
 build_costs=[]
 build_costs_with_plugin=[]
-# test_cases=[[100, 10], [500, 20], [500, 50], [800, 50]]
-# test_cases=[[100, 10], [500, 10], [1000, 10], [1000, 20]]
-test_cases=[[1, 200]]
+test_cases=[[100, 10], [500, 50], [800, 100], [1000, 200]]
+#test_cases=[[1000, 200]]
+#test_cases=[[1, 200]]
 count=0
 
 workspace=Dir.glob('*.xcworkspace').first
@@ -39,9 +39,8 @@ while count < test_cases.size
   puts "- running case #{count+1}/#{test_cases.size}".green
   current_costs=[]
   current_costs_with_plugin=[]
-  pre_flag=true
-  # each build twice
-  [false, false, true, true].each do |flag|
+
+  [false, true].each do |flag|
     tool.gen_podfile(flag)
     # pod install
     suc=build_tool.pod_install
@@ -54,9 +53,7 @@ while count < test_cases.size
       return
     end
 
-    if pre_flag != flag
-      build_tool.clean_cache
-    end
+    build_tool.clean_cache
 
     if flag
       puts "- prepare to build project using hmap plugin"
@@ -65,12 +62,11 @@ while count < test_cases.size
       puts "- prepare to build project without plugin"
       current_costs << build_tool.run
     end
-    pre_flag = flag
   end
 
   build_costs = build_costs + current_costs
   build_costs_with_plugin = build_costs_with_plugin + current_costs_with_plugin
-  Helper.append_data("#{one_case.first} source files & #{one_case.last} pods", current_costs, current_costs_with_plugin)
+  Helper.append_data("#{one_case.first} source files & #{[tool.available_pods.size, one_case.last].min} pods", current_costs, current_costs_with_plugin)
   tbl=Print::Table.new($labels, $datas)
   tbl.print
   count=count+1

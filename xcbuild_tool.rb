@@ -27,7 +27,7 @@ module Xcodeproj
     end
     def pod_install
       # pod install
-      suc=system('arch -x86_64 pod install')
+      suc=system('arch -x86_64 bundle exec pod install')
       unless suc
         puts '[x] pod install failed.'.red
       end
@@ -36,8 +36,8 @@ module Xcodeproj
     def run
       puts '- xcodebuild build'
       t_start = Time.now.to_f
-      system("xcodebuild -workspace #{workspace} -scheme #{scheme} -configuration Debug -destination 'platform=iOS,id=20b87b696bc99b2c6e6950c76a7fa0cf6cd9f933' > /dev/null")
-      #system("xcodebuild -workspace #{workspace} -scheme #{scheme} -configuration Debug -sdk #{$buildsdk} > /dev/null")
+      #system("xcodebuild -workspace #{workspace} -scheme #{scheme} -configuration Debug -destination 'platform=iOS,id=20b87b696bc99b2c6e6950c76a7fa0cf6cd9f933' > /dev/null")
+      system("xcodebuild -workspace #{workspace} -scheme #{scheme} -configuration Debug -sdk #{$buildsdk} -showBuildTimingSummary")
       t_end = Time.now.to_f
       cost=t_end - t_start
       cost
