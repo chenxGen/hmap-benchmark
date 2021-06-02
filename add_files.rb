@@ -44,8 +44,9 @@ module Xcodeproj
         puts '- clean classes group'
         obj_group.files.each do |f|
           source_build_phase.remove_file_reference(f)
-          if File.exist?(f.path)
-              File.delete(f.path)
+          path=File.join(class_dir,f.path)
+          if File.exist?(path)
+              File.delete(path)
           end
         end
         obj_group.clear
