@@ -42,8 +42,10 @@ end
 
 build_costs_with_plugin = []
 build_costs = []
+build_times = 3
+build_flags= Array.new(build_times, false) + Array.new(build_times, true)
 
-build_flags=[false, false, true, true]
+
 build_flags.each do |flag|
   $hmap_plugin_enabled = flag
   # pod install
@@ -53,6 +55,13 @@ build_flags.each do |flag|
   end
 
   build_tool.clean_cache
+
+  # eval pre build script
+  pre_build_script = Dir.glob('pre_build.rb').first
+  if pre_build_script
+    pre_build_script = File.expand_path(pre_build_script)
+    eval(File.read(pre_build_script))
+  end
 
   result=build_tool.run
   if result.first == false

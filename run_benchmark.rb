@@ -20,9 +20,9 @@ table_data=HmapBenckmark::TableData.new
 build_tool=Xcodeproj::BuildTool.new(workspace, scheme)
 build_costs=[]
 build_costs_with_plugin=[]
-#test_cases=[[100, 10], [500, 50], [800, 100], [1000, 200]]
+test_cases=[[100, 10], [500, 50], [800, 100], [1000, 200]]
 #test_cases=[[1000, 200]]
-test_cases=[[1, 10]]
+#test_cases=[[1, 200]]
 count=0
 
 while count < test_cases.size
@@ -33,7 +33,8 @@ while count < test_cases.size
   puts "- running case #{count+1}/#{test_cases.size}".green
   current_costs=[]
   current_costs_with_plugin=[]
-  build_flags=[false, false, true, true]
+  build_times = 3
+  build_flags= Array.new(build_times, false) + Array.new(build_times, true)
   build_flags.each do |flag|
     tool.gen_podfile(flag)
     # pod install
