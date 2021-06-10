@@ -86,12 +86,10 @@ module Xcodeproj
         project = projects.first
       elsif projects.size > 1
         raise Informative, 'There are more than one Xcode project documents ' \
-                           'in the current working directory. Please specify ' \
-                           'which to use with the `--project` option.'
+                           'in the current working directory.'
       else
         raise Informative, 'No Xcode project document found in the current ' \
-                           'working directory. Please specify which to use ' \
-                           'with the `--project` option.'
+                           'working directory.'
       end
       xcodeproj_path = Pathname.new(project).expand_path
       @xcodeproj=Project.open(xcodeproj_path)
