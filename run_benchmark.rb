@@ -20,9 +20,8 @@ table_data=HmapBenckmark::TableData.new
 build_tool=Xcodeproj::BuildTool.new(workspace, scheme)
 build_costs=[]
 build_costs_with_plugin=[]
-test_cases=[[100, 10], [500, 50], [800, 100], [1000, 200]]
-#test_cases=[[1000, 200]]
-#test_cases=[[1, 200]]
+#test_cases=[[100, 10], [500, 50], [800, 100], [1000, 200]]
+test_cases=[[100, 200], [1, 200]]
 count=0
 
 while count < test_cases.size

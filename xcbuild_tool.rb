@@ -44,8 +44,7 @@ module Xcodeproj
     def run
       puts '- xcodebuild build'
       t_start = Time.now.to_f
-      #system("xcodebuild -workspace #{workspace} -scheme #{scheme} -configuration Debug -destination 'platform=iOS,id=20b87b696bc99b2c6e6950c76a7fa0cf6cd9f933' > /dev/null")
-      suc=system("xcodebuild -arch arm64 -workspace #{workspace} -scheme #{scheme} -configuration Debug -showBuildTimingSummary > /dev/null")
+      suc=system("xcodebuild -arch x86_64 -workspace #{workspace} -scheme #{scheme} -configuration Debug -showBuildTimingSummary > /dev/null")
       t_end = Time.now.to_f
       cost=t_end - t_start
       [suc, cost]
