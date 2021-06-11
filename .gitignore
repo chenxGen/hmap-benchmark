@@ -63,3 +63,6 @@ fastlane/test_output
 some.rb
 *.sh
 *.lock
+build_single_file.rb
+app/Podfile
+app/app/classes

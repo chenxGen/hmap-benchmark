@@ -4,6 +4,8 @@ source "https://rubygems.org"
 
 git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
 
+# supported 1.7.0 and above
 gem 'cocoapods', '1.10.1'
-gem 'cocoapods-project-hmap', :path=>'../../cocoapods-project-hmap'
-# gem "rails"
+# debug
+#gem 'cocoapods-project-hmap', :path=>'../../cocoapods-project-hmap'
+gem 'cocoapods-project-hmap'

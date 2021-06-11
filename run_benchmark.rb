@@ -1,17 +1,26 @@
-require "cocoapods"
-require "./xcbuild_tool"
-require "./print_table"
+require 'cocoapods'
+require 'claide'
+require './xcbuild_tool'
+require './print_table'
 require './add_files'
 require './table_data'
 
-project_root=ARGV.first
-if project_root == nil
-  puts 'Usage: $ruby run_benchmark.rb path/to/project_root'
-  return
+# Usage: ruby run_benckmark.rb --cases='[[1, 200], [20, 200]]' --build-times=3
+argv=CLAide::ARGV.new(ARGV)
+test_cases = argv.option('cases')
+build_times = argv.option('build-times', '3').to_i
+
+if test_cases == nil
+  #[[100, 10], [500, 50], [800, 100], [1000, 200]]
+  test_cases = [[1, 200]]
+else
+  test_cases = eval(test_cases)
 end
 
-project_root=File.expand_path(project_root)
+project_root=File.expand_path('app')
 Dir.chdir(project_root)
+
+`bundle install`
 
 workspace=Dir.glob('*.xcworkspace').first
 scheme=workspace.split('.').first
@@ -20,8 +29,6 @@ table_data=HmapBenckmark::TableData.new
 build_tool=Xcodeproj::BuildTool.new(workspace, scheme)
 build_costs=[]
 build_costs_with_plugin=[]
-#test_cases=[[100, 10], [500, 50], [800, 100], [1000, 200]]
-test_cases=[[100, 200], [1, 200]]
 count=0
 
 while count < test_cases.size
@@ -32,7 +39,6 @@ while count < test_cases.size
   puts "- running case #{count+1}/#{test_cases.size}".green
   current_costs=[]
   current_costs_with_plugin=[]
-  build_times = 3
   build_flags= Array.new(build_times, false) + Array.new(build_times, true)
   build_flags.each do |flag|
     tool.gen_podfile(flag)
