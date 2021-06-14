@@ -6,10 +6,10 @@ require './table_data'
 
 # Usage: ruby run_benckmark.rb --cases='[[1, 200], [20, 200]]' --build-times=3
 argv=CLAide::ARGV.new(ARGV)
-test_cases = argv.option('project')
+project_root = argv.option('project')
 build_times = argv.option('build-times', '3').to_i
 
-if project == nil
+if project_root == nil
   puts 'Usage: ruby run_for_any_project.rb --project=path/to/project/root --build-times=3'
   return 1
 end
