@@ -23,17 +23,13 @@ module Xcodeproj
         end
       end
     end
-    def pod_install(use_shell=true)
+    def pod_install(use_bundler=true)
       # pod install
       suc=true
-      if use_shell
-        suc=system('arch -x86_64 bundle exec pod install')
+      if use_bundler
+        suc=system('arch -x86_64 bundle exec pod install --no-repo-update')
       else
-        begin
-          Pod::Command.run(['install'])
-        rescue
-          suc = false
-        end
+        suc=system('arch -x86_64 pod install --no-repo-update')
       end
 
       unless suc
